@@ -8,6 +8,12 @@
 <p>
     <a href="{% url 'learning_logs:index' %}">Learning Log</a> -
     <a href="{% url 'learning_logs:topics' %}">Topics</a>
+    {% if user.is_authenticated %}
+    Hello, {{ user.username }}
+    <a href="{% url 'users:logout' %}">Logout</a>
+    {% else %}
+    <a href="{% url 'users:login' %}">Log In</a>
+    {% endif %}
 </p>
 
 {% block content %}{% endblock content %}
