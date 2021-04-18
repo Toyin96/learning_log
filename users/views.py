@@ -9,17 +9,14 @@ def register(request):
     if request.method != 'POST':
         form = UserCreationForm()
     else:
-        # process completed
+        # form is completed, ready to be processed
         form = UserCreationForm(data=request.POST)
+
         if form.is_valid():
             new_user = form.save()
-
-            # log the new user in and redirects to the homepage
             login(request, new_user)
             return redirect('learning_logs:index')
 
     # Display a blank or invalid form
-    context = {
-        'form': form
-    }
+    context = {"form": form}
     return render(request, 'registration/register.html', context)
