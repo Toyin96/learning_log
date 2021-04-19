@@ -69,6 +69,7 @@ def new_entry(request, topic_id):
         new_entry = form.save(commit=False)
         new_entry.topic = topic
         new_entry.save()
+        return redirect('learning_logs:topic', topic.id)
 
     # Displays an empty or invalid form
     context = {'topic': topic, 'form': form}
@@ -98,3 +99,27 @@ def edit_entry(request, entry_id):
         'entry': entry, 'topic': topic, 'form': form
     }
     return render(request, 'learning_logs/edit_entry.html', context)
+
+
+@login_required
+def delete_entry(request, entry_id):
+    entry = Entry.objects.get(id=entry_id)
+    topic = entry.topic
+
+    if topic.owner != request.user:
+        raise Http404
+
+    # prefilled entry form
+    if request.method != 'POST':
+        form = EntryForm(instance=entry)
+    else:
+        form = EntryForm(instance=entry, data=request.POST)
+        if form.is_valid():
+            entry.delete()
+            return redirect('learning_logs:topic', topic.id)
+
+    context = {
+        "entry": entry, "topic": topic, "form": form
+    }
+
+    return render(request, 'learning_logs/delete_entry.html', context)
